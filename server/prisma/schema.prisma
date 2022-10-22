@@ -1,0 +1,115 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id       String   @id @default(uuid())
+  name     String   @db.VarChar(255)
+  email    String   @unique
+  photo    String?  @default("default.png")
+  verified Boolean? @default(false)
+  enabled  Boolean  @default(false)
+
+  password String
+  role     RoleEnumType? @default(user)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  provider    String?
+  Strat       Strat[]
+  Transaction Transaction[]
+
+  @@map(name: "users")
+}
+
+enum RoleEnumType {
+  user
+  admin
+}
+
+enum PairEnumType {
+  BTCUSDT
+  ALGOUSDT
+  ETHUSDT
+  BNBUSDT
+  XRPUSDT
+  ADAUSDT
+  SOLUSDT
+  DOGEUSDT
+  MATICUSDT
+  DOTUSDT
+  TRXUSDT
+  UNIUSDT
+  AVAXUSDT
+  LEOUSDT
+  LTCUSDT
+  LINKUSDT
+  AXSUSDT
+  KDAUSDT
+  GLMUSDT
+}
+
+enum StratEnumType {
+  BB20
+}
+
+model Period {
+  value String  @unique
+  kline Kline[]
+
+  @@map(name: "periods")
+}
+
+model Kline {
+  id        Int          @id @default(autoincrement())
+  timestamp DateTime
+  period_id String
+  period    Period       @relation(fields: [period_id], references: [value])
+  pair      PairEnumType
+  open      String
+  high      String
+  low       String
+  close     String
+  volume    String
+
+  @@map(name: "klines")
+}
+
+model Strat {
+  id           Int           @id @default(autoincrement())
+  createdAt    DateTime      @default(now())
+  updatedAt    DateTime      @updatedAt
+  type         StratEnumType @default(BB20)
+  pair         PairEnumType
+  waitingToBuy Boolean       @default(false)
+  size         Float         @default(10)
+  user_id      String
+  user         User          @relation(fields: [user_id], references: [id])
+  Transaction  Transaction[]
+  enabled      Boolean       @default(false)
+
+  @@map(name: "strats")
+}
+
+model Transaction {
+  id            Int      @id @default(autoincrement())
+  user_id       String
+  user          User     @relation(fields: [user_id], references: [id])
+  size          Float
+  strat_id      Int
+  strat         Strat    @relation(fields: [strat_id], references: [id])
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+  clientOrderId String
+
+  @@map(name: "transactions")
+}

@@ -1,0 +1,40 @@
+{
+  "scripts": {
+    "start": "ts-node-dev --respawn src/index.ts",
+    "populateKlines":"ts-node-dev src/populateKlines.ts",
+    "db:migrate": "pnpm prisma migrate dev  --create-only && pnpm prisma generate",
+    "db:push": "pnpm prisma db push"
+  },
+  "engines": {
+    "node": "18.x"
+  },
+  "prisma": {
+    "seed": "ts-node prisma/seed.ts"
+  },
+  "dependencies": {
+    "@prisma/client": "^4.5.0",
+    "@tanstack/react-query": "^4.12.0",
+    "@trpc/client": "10.0.0-proxy-beta.21",
+    "@trpc/next": "10.0.0-proxy-beta.21",
+    "@trpc/react-query": "10.0.0-proxy-beta.21",
+    "@trpc/server": "10.0.0-proxy-beta.21",
+    "binance": "^2.1.2",
+    "cors": "^2.8.5",
+    "dotenv": "^16.0.3",
+    "express": "^4.18.2",
+    "express-openid-connect": "^2.9.0",
+    "jsonwebtoken": "^8.5.1",
+    "ts-node": "^10.9.1",
+    "zod": "^3.19.1"
+  },
+  "devDependencies": {
+    "@types/cors": "^2.8.12",
+    "@types/express": "^4.17.14",
+    "@types/jsonwebtoken": "^8.5.9",
+    "eslint": "^8.25.0",
+    "eslint-prettier": "0.0.0-empty",
+    "prisma": "^4.5.0",
+    "ts-node-dev": "^2.0.0",
+    "typescript": "^4.8.4"
+  }
+}

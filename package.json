@@ -1,0 +1,37 @@
+{
+  "name": "crypto-watch",
+  "version": "0.0.0",
+  "license": "MIT",
+  "scripts": {
+    "typecheck": "tsc -p server --noEmit && tsc -p client --noEmit",
+    "lint": "eslint --cache .",
+    "test": "run-s test-unit test-serve test-build",
+    "test-serve": "vitest run -c vitest.config.e2e.ts",
+    "test-build": "VITE_TEST_BUILD=1 vitest run -c vitest.config.e2e.ts",
+    "test-unit": "vitest run",
+    "dev": "pnpm -r --parallel --filter='./packages/*' run dev"
+  },
+  "engines": {
+    "npm": ">=8.19.0 <9.0.0",
+    "node": ">=18.10.0 <19.0.0"
+  },
+  "private": true,
+  "dependencies": {
+    "dayjs": "^1.11.6",
+    "lodash": "^4.17.21",
+    "only-allow": "^1.1.1"
+  },
+  "devDependencies": {
+    "@types/lodash": "^4.14.186",
+    "@types/node": "^18.11.2",
+    "eslint": "~8.15.0",
+    "eslint-config-prettier": "8.1.0",
+    "eslint-plugin-import": "2.26.0",
+    "eslint-plugin-jsx-a11y": "6.6.1",
+    "eslint-plugin-react": "7.31.1",
+    "eslint-plugin-react-hooks": "4.6.0",
+    "prettier": "^2.7.1",
+    "ts-node": "10.9.1",
+    "typescript": "^4.8.4"
+  }
+}
