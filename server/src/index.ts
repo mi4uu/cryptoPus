@@ -5,6 +5,21 @@ import {appRouter} from './app';
 import { createContext } from './context';
 import { requiresAuth } from 'express-openid-connect';
 import {auth} from 'express-openid-connect'
+
+
+const Queue = require('bull');
+const { createBullBoard } = require('@bull-board/api');
+const { BullAdapter } = require('@bull-board/api/bullAdapter');
+const { BullMQAdapter } = require('@bull-board/api/bullMQAdapter');
+const { ExpressAdapter } = require('@bull-board/express');
+const queue = new Queue('trading');
+const serverAdapter = new ExpressAdapter();
+serverAdapter.setBasePath('/admin/queues');
+const { addQueue, removeQueue, setQueues, replaceQueues } = createBullBoard({
+    queues: [new BullAdapter(queue)],
+    serverAdapter: serverAdapter,
+  });
+
 import * as dotenv from 'dotenv';
 dotenv.config();
 
@@ -27,6 +42,8 @@ const config:{
   }
 
   app.use(auth(config));
+  app.use('/admin/queues', serverAdapter.getRouter());
+
 app.use(
     '/',
     trpcExpress.createExpressMiddleware({
@@ -34,7 +51,6 @@ app.use(
         createContext,
     }),
 );
-
 
 
 app.listen(process.env.PORT, () => {

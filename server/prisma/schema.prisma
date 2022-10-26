@@ -50,12 +50,10 @@ enum PairEnumType {
   TRXUSDT
   UNIUSDT
   AVAXUSDT
-  LEOUSDT
   LTCUSDT
   LINKUSDT
   AXSUSDT
   KDAUSDT
-  GLMUSDT
 }
 
 enum StratEnumType {
@@ -75,12 +73,14 @@ model Kline {
   period_id String
   period    Period       @relation(fields: [period_id], references: [value])
   pair      PairEnumType
-  open      String
-  high      String
-  low       String
-  close     String
-  volume    String
+  open      Decimal
+  high      Decimal
+  low       Decimal
+  close     Decimal
+  volume    Decimal
 
+  @@unique([timestamp(sort: Desc), period_id, pair])
+  @@index([timestamp(sort: Asc)])
   @@map(name: "klines")
 }
 

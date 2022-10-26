@@ -3,6 +3,9 @@ const prisma = new PrismaClient();
 async function main() {
   const periods = []
     await prisma.period.deleteMany({where:{}})
+    periods.push( await prisma.period.create(
+      { data: { value: '1m'}}
+     ));
    periods.push( await prisma.period.create(
         { data: { value: '5m'}}
        ));
@@ -20,6 +23,9 @@ async function main() {
    ));
    periods.push( await prisma.period.create(
     { data: { value: '4h'}}
+   ));
+   periods.push( await prisma.period.create(
+    { data: { value: '1d'}}
    ));
    console.log(periods)
 }
