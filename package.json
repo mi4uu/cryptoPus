@@ -9,7 +9,7 @@
     "test-serve": "vitest run -c vitest.config.e2e.ts",
     "test-build": "VITE_TEST_BUILD=1 vitest run -c vitest.config.e2e.ts",
     "test-unit": "vitest run",
-    "dev": "pnpm -r --parallel --filter='./packages/*' run dev"
+    "dev": "pnpm -r --parallel --filter='./*' run dev"
   },
   "engines": {
     "npm": ">=8.19.0 <9.0.0",
@@ -20,7 +20,9 @@
     "dayjs": "^1.11.6",
     "lodash": "^4.17.21",
     "only-allow": "^1.1.1",
-    "ts-pattern": "^4.0.5"
+    "ts-pattern": "^4.0.5",
+    "dotenv": "^16.0.3"
+
   },
   "devDependencies": {
     "@types/lodash": "^4.14.186",

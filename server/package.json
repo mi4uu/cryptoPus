@@ -1,6 +1,6 @@
 {
   "scripts": {
-    "start": "ts-node-dev --respawn src/index.ts",
+    "dev": "ts-node-dev --respawn src/index.ts",
     "populateKlines": "ts-node-dev src/populateKlines.ts",
     "simulate": "ts-node src/simulate.ts | pino-pretty",
     "simulate2": "ts-node src/simulate2.ts",
@@ -26,7 +26,6 @@
     "bull": "^4.10.1",
     "cli-progress": "^3.11.2",
     "cors": "^2.8.5",
-    "dotenv": "^16.0.3",
     "express": "^4.18.2",
     "express-openid-connect": "^2.9.0",
     "jsonwebtoken": "^8.5.1",

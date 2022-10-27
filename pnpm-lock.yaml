@@ -7,6 +7,7 @@ importers:
       '@types/lodash': ^4.14.186
       '@types/node': ^18.11.2
       dayjs: ^1.11.6
+      dotenv: ^16.0.3
       eslint: ~8.15.0
       eslint-config-prettier: 8.1.0
       eslint-plugin-import: 2.26.0
@@ -21,6 +22,7 @@ importers:
       typescript: ^4.8.4
     dependencies:
       dayjs: 1.11.6
+      dotenv: 16.0.3
       lodash: 4.17.21
       only-allow: 1.1.1
       ts-pattern: 4.0.5
@@ -75,7 +77,6 @@ importers:
       bull: ^4.10.1
       cli-progress: ^3.11.2
       cors: ^2.8.5
-      dotenv: ^16.0.3
       eslint: ^8.25.0
       eslint-prettier: 0.0.0-empty
       express: ^4.18.2
@@ -101,7 +102,6 @@ importers:
       bull: 4.10.1
       cli-progress: 3.11.2
       cors: 2.8.5
-      dotenv: 16.0.3
       express: 4.18.2
       express-openid-connect: 2.9.0_express@4.18.2
       jsonwebtoken: 8.5.1
