@@ -1,7 +1,7 @@
 import express, { Application } from 'express';
 import cors from 'cors';
 import * as trpcExpress from '@trpc/server/adapters/express';
-import {appRouter} from './app';
+import {appRouter, t} from './trpc';
 import { createContext } from './context';
 import { requiresAuth } from 'express-openid-connect';
 import {auth} from 'express-openid-connect'
@@ -12,6 +12,40 @@ const { createBullBoard } = require('@bull-board/api');
 const { BullAdapter } = require('@bull-board/api/bullAdapter');
 const { BullMQAdapter } = require('@bull-board/api/bullMQAdapter');
 const { ExpressAdapter } = require('@bull-board/express');
+
+import * as dotenv from 'dotenv';
+import { klineRouter } from './routers/kline.router';
+import { indicatorRouter } from './routers/indicator.router';
+
+// get config from .env
+dotenv.config();
+const port = process.env.PORT ?? 8080
+
+
+// init express
+const app: Application = express();
+app.use(express.json());
+app.use(cors());
+
+
+
+// init auth
+const config:{
+  authRequired: false,
+  auth0Logout: true,
+  baseURL?:string
+}= {
+  authRequired: false,
+  auth0Logout: true,
+};
+if (!config.baseURL && !process.env.BASE_URL && process.env.PORT && process.env.NODE_ENV !== 'production') {
+  config.baseURL = `http://localhost:${port}`;
+}
+
+app.use(auth(config));
+
+
+// init bull admin
 const queue = new Queue('trading');
 const serverAdapter = new ExpressAdapter();
 serverAdapter.setBasePath('/admin/queues');
@@ -20,34 +54,15 @@ const { addQueue, removeQueue, setQueues, replaceQueues } = createBullBoard({
     serverAdapter: serverAdapter,
   });
 
-import * as dotenv from 'dotenv';
-dotenv.config();
 
-const app: Application = express();
+app.use('/admin/queues', serverAdapter.getRouter());
 
 
-app.use(express.json());
-app.use(cors());
-const port = process.env.PORT ?? 8080
-const config:{
-    authRequired: false,
-    auth0Logout: true,
-    baseURL?:string
-}= {
-    authRequired: false,
-    auth0Logout: true,
-  };
-  if (!config.baseURL && !process.env.BASE_URL && process.env.PORT && process.env.NODE_ENV !== 'production') {
-    config.baseURL = `http://localhost:${port}`;
-  }
-
-  app.use(auth(config));
-  app.use('/admin/queues', serverAdapter.getRouter());
-
+// setup routers
 app.use(
     '/',
     trpcExpress.createExpressMiddleware({
-        router: appRouter,
+        router: t.mergeRouters(appRouter, klineRouter, indicatorRouter),
         createContext,
     }),
 );

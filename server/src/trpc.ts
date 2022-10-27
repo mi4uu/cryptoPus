@@ -8,7 +8,11 @@ export const t = initTRPC.context<Context>().create();
 
 export const protectedProcedure = t.procedure.use(isAuthed);
 
-export const appRouter = t.router({
+export const middleware = t.middleware;
+export const router = t.router;
+export const publicProcedure = t.procedure;
+
+export const appRouter = router({
     profile: t.procedure
     .input(z.string().nullish())
     .query(({ input, ctx }) => ctx.user),

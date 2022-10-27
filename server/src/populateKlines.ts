@@ -24,7 +24,7 @@ const run = async () => {
   console.log('done')
   for (const pair in PairEnumType) {
     for (const period of periods) {
-      const unit = period.value.slice(-1) as "m" | "d";
+      const unit = period.value.slice(-1) as "m" | "h" |"d";
       const interval = Number(period.value.slice(0, -1));
       let startDate = day(process.env.START_DATE);
       let endDate = startDate.add(interval * results, unit);
