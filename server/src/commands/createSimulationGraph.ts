@@ -1,6 +1,6 @@
 import { PairEnumType } from "@prisma/client"
 import dayjs from "dayjs"
-import { prisma } from "./utils/prisma"
+import { prisma } from "../utils/prisma"
 import { promises as fs } from 'fs'
 import * as dotenv from "dotenv";
 import path from "path";
@@ -480,7 +480,7 @@ const xd =[
 export const saveChart = async (symbol:PairEnumType, interval:string,  tradesWin:trades[], tradesLoss:trades[])=>{
     const start = dayjs(process.env.START_DATE);
     const content = await createGraph(symbol, interval, start.toDate(),tradesWin,tradesLoss)
-    const pathToFile = path.join(__dirname,'..', '..','simulationResults',`${symbol}.html`)
+    const pathToFile = path.join(__dirname,'..', '..','..','simulationResults',`${symbol}.html`)
     await fs.writeFile(pathToFile, content);
 }
 saveChart('BTCUSDT','1h', xd,xd2)

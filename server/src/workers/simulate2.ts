@@ -1,14 +1,14 @@
 import * as dotenv from "dotenv";
 import day from "dayjs";
 import { KlineInterval, MainClient } from "binance";
-import { prisma } from "./utils/prisma";
+import { prisma } from "../utils/prisma";
 import { PairEnumType } from "@prisma/client";
 import { indicators } from "tulind";
 import { Decimal } from "@prisma/client/runtime";
 import duration from "dayjs/plugin/duration";
 import relativeTime from "dayjs/plugin/relativeTime";
 import fs from "fs";
-import { saveChart } from "./createSimulationGraph";
+import { saveChart } from "../commands/createSimulationGraph";
 dotenv.config();
 day.extend(duration);
 day.extend(relativeTime);

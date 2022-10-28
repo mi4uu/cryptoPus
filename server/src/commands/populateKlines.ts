@@ -1,7 +1,7 @@
 import * as dotenv from "dotenv";
 import day from "dayjs";
 import { KlineInterval, MainClient } from "binance";
-import { prisma } from "./utils/prisma";
+import { prisma } from "@server/utils/prisma";
 import { PairEnumType } from "@prisma/client";
 import { Decimal } from "@prisma/client/runtime";
 

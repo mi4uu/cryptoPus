@@ -85,6 +85,7 @@ importers:
       pino: ^8.7.0
       pino-pretty: ^9.1.1
       prisma: ^4.5.0
+      tozod: ^3.0.0
       ts-node: ^10.9.1
       ts-node-dev: ^2.0.0
       tulind: ^0.8.20
@@ -107,6 +108,7 @@ importers:
       jsonwebtoken: 8.5.1
       pino: 8.7.0
       pino-pretty: 9.1.1
+      tozod: 3.0.0_zod@3.19.1
       ts-node: 10.9.1_lw7q66ikwuedwcorwkk4v6trsa
       tulind: 0.8.20
       zod: 3.19.1
@@ -4470,6 +4472,14 @@ packages:
   /toidentifier/1.0.1:
     resolution: {integrity: sha512-o5sSPKEkg/DIQNmH43V0/uerLrpzVedkUh8tGNvaeXpfpuwjKenlSox/2O/BTlZUtEe+JG7s5YhEz608PlAHRA==}
     engines: {node: '>=0.6'}
+    dev: false
+
+  /tozod/3.0.0_zod@3.19.1:
+    resolution: {integrity: sha512-R03/moNPEGgWKoTdCsEJuyEoP6NtXyhWg9L9lJhF2XyCR2Ce9XE+yXaswaVmqyBpHsRPC2Pk38mK8Ex7iHaXcg==}
+    peerDependencies:
+      zod: ^3.0.0-alpha.2
+    dependencies:
+      zod: 3.19.1
     dev: false
 
   /tr46/0.0.3:

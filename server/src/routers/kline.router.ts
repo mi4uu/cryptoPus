@@ -1,16 +1,9 @@
 import { router,t } from "../trpc";
-import { z } from 'zod';
 import { getKlines } from "../services/kline.service";
-import { PairEnumType } from "@prisma/client";
+import { klineSelector } from "../schema/kline.schema";
 
 export const klineRouter = router({
     getKlines: t.procedure
-    .input(z.object({
-        pair: z.nativeEnum(PairEnumType),
-        period:z.string(),
-        dateFrom:z.string(),
-        dateTo:z.string().optional(),
-        limit:z.number().optional(),
-      }))
+    .input(klineSelector)
     .query(({ input, ctx }) => getKlines(input)),
 });

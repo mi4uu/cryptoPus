@@ -1,6 +1,5 @@
-import * as trpc from '@trpc/server';
 import { inferAsyncReturnType } from '@trpc/server';
-import * as user from './services/user.service'
+import * as user from '@server/services/user.service'
 import * as trpcExpress from '@trpc/server/adapters/express';
 import * as _ from 'lodash'
 export async function createContext({

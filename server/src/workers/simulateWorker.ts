@@ -1,13 +1,13 @@
 import * as dotenv from "dotenv";
 import dayjs from "dayjs";
 import cliProgress from 'cli-progress'
-import { prisma } from "./utils/prisma";
+import { prisma } from "../utils/prisma";
 import { PairEnumType } from "@prisma/client";
 import { indicators } from "tulind";
 import { Decimal } from "@prisma/client/runtime";
 import fs from "fs";
-import { saveChart } from "./createSimulationGraph";
-import { humanizePeriod, logger, percent } from "./utils/helpers";
+import { saveChart } from "../commands/createSimulationGraph";
+import { humanizePeriod, logger, percent } from "../utils/helpers";
 import { toInteger } from "lodash";
 dotenv.config();
 

@@ -2,9 +2,9 @@
   "scripts": {
     "dev": "ts-node-dev --respawn src/index.ts",
     "populateKlines": "ts-node-dev src/populateKlines.ts",
-    "simulate": "ts-node src/simulate.ts | pino-pretty",
-    "simulate2": "ts-node src/simulate2.ts",
-    "simulate:graph": "ts-node src/createSimulationGraph.ts",
+    "simulate": "ts-node src/commands/simulate.ts | pino-pretty",
+    "simulate2": "ts-node src/commands/simulate2.ts",
+    "simulate:graph": "ts-node src/commands/createSimulationGraph.ts",
     "db:migrate": "pnpm prisma migrate dev  --create-only && pnpm prisma generate",
     "db:push": "pnpm prisma db push"
   },
@@ -31,6 +31,7 @@
     "jsonwebtoken": "^8.5.1",
     "pino": "^8.7.0",
     "pino-pretty": "^9.1.1",
+    "tozod": "^3.0.0",
     "ts-node": "^10.9.1",
     "tulind": "^0.8.20",
     "zod": "^3.19.1"

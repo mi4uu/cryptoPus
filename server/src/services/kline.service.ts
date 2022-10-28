@@ -1,31 +1,17 @@
-import { PairEnumType} from "@prisma/client";
-import dayjs, { Dayjs } from "dayjs";
-import customConfig from "../config/default";
+import dayjs from "dayjs";
 import { prisma } from "../utils/prisma";
 import {match,P} from 'ts-pattern'
-type DateType = string | Date | Dayjs;
-export interface GetKlinesBaseParams {
-  pair: PairEnumType;
-  period: string;
-  dateFrom: DateType;
-  dateTo?: DateType;
-  limit?: number;
-}
-export interface GetKlinesDateToParams extends Omit<GetKlinesBaseParams, 'dateTo'> {
-  dateTo: DateType;
-}
-export interface GetKlinesLimitParams extends Omit<GetKlinesBaseParams, 'limit'> {
-  limit: number;
-}
-export type GetKlinesParams = GetKlinesDateToParams | GetKlinesLimitParams;
+import { KlineSelectorType } from "../schema/kline.schema";
 
 export const getKlines = async ({
-  pair,
-  period,
-  dateFrom,
-  dateTo,
-  limit,
-}: GetKlinesBaseParams) => {
+    pair,
+    period,
+    dateFrom,
+    dateTo,
+    limit
+  }: KlineSelectorType) => {
+
+
   if (!dateTo && !limit) throw new Error("dateTo or limit must be provided");
   if (dateTo && limit) throw new Error("dateTo or limit must be provided, not both");
 

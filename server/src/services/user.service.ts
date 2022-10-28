@@ -1,6 +1,5 @@
 import { Prisma, User } from '@prisma/client';
-import customConfig from '../config/default';
-import { prisma } from '../utils/prisma';
+import { prisma } from '@server/utils/prisma';
 
 export const createUser = async (input: Prisma.UserCreateInput) => {
   return (await prisma.user.create({

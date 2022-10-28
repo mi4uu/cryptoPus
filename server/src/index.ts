@@ -1,9 +1,8 @@
 import express, { Application } from 'express';
 import cors from 'cors';
 import * as trpcExpress from '@trpc/server/adapters/express';
-import {appRouter, t} from './trpc';
-import { createContext } from './context';
-import { requiresAuth } from 'express-openid-connect';
+import {appRouter, t} from '@server/trpc';
+import { createContext } from '@server/context';
 import {auth} from 'express-openid-connect'
 
 

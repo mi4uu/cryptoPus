@@ -1,12 +1,12 @@
 import { router,t } from "../trpc";
 import { z } from 'zod';
-import { getMacd } from "../services/indicator.service";
+import { getIndicatorForKlines } from "../services/getindicator.service";
+import { IndicatorSelector } from "../schema/indicator.schema";
 
 export const indicatorRouter = router({
     getMacd: t.procedure
-    .input(z.object({
-        prices: z.number().array(),
-        options:z.number().array().length(3).optional()
-      }))
-    .query(({ input, ctx }) => getMacd(input)),
+    .input(IndicatorSelector)
+    .query(({ input, ctx }) => {
+        return getIndicatorForKlines(input)
+    },
 });
