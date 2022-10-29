@@ -12,13 +12,34 @@
     "node": "18.x"
   },
   "dependencies": {
+    "@emotion/react": "^11.10.5",
+    "@mantine/core": "^5.6.3",
+    "@mantine/dates": "^5.6.3",
+    "@mantine/form": "^5.6.3",
+    "@mantine/hooks": "^5.6.3",
+    "@mantine/modals": "^5.6.3",
+    "@mantine/notifications": "^5.6.3",
+    "@mantine/nprogress": "^5.6.3",
+    "@mantine/spotlight": "^5.6.3",
+    "@tabler/core": "1.0.0-beta14",
+    "@tabler/icons": "^1.108.0",
+    "@tanstack/react-query": "^4.13.0",
+    "@trpc/client": "10.0.0-proxy-beta.21",
+    "@trpc/react-query": "10.0.0-proxy-beta.21",
+    "@trpc/server": "10.0.0-proxy-beta.21",
+    "dayjs": "^1.11.6",
+    "plotly.js": "^2.16.1",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
-    "@trpc/client": "10.0.0-proxy-beta.21"
+    "react-plotly.js": "^2.6.0",
+    "react-router-dom": "^6.4.2",
+    "vite-tsconfig-paths": "^3.5.2"
   },
   "devDependencies": {
+    "@types/plotly.js": "^2.12.8",
     "@types/react": "^18.0.17",
     "@types/react-dom": "^18.0.6",
+    "@types/react-plotly.js": "^2.5.2",
     "@vitejs/plugin-react": "^2.1.0",
     "vite": "^3.1.0"
   }

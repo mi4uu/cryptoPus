@@ -2,9 +2,43 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <link rel="icon" type="image/svg+xml" href="/vite.svg" />
+    <link rel="icon" href="/logo.gif" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Vite + React + TS</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Amatic+SC&family=Montserrat:ital,wght@0,400;0,700;1,400;1,700&display=swap"
+      rel="stylesheet"
+    />
+    <script>
+      document.head = document.head || document.getElementsByTagName("head")[0];
+
+      function changeFavicon(src) {
+        const link = document.createElement("link"),
+          oldLink = document.getElementById("dynamic-favicon");
+        link.id = "dynamic-favicon";
+        link.rel = "shortcut icon";
+        link.href = src;
+        if (oldLink) {
+          document.head.removeChild(oldLink);
+        }
+        document.head.appendChild(link);
+      }
+      const favicons = ["/logoanim0.gif", "/logoanim1.gif", "/logoanim2.gif"];
+      let currentIcon = 2;
+      setInterval(() => {
+        currentIcon += 1;
+        let nextIcon = favicons[currentIcon];
+        if (nextIcon === undefined) {
+          currentIcon = -1;
+          nextIcon = favicons[0];
+        }
+        changeFavicon(nextIcon);
+        //  console.log(`changing to ${nextIcon}`)
+      }, 600);
+    </script>
+    <title>Cryptopus</title>
   </head>
   <body>
     <div id="root"></div>

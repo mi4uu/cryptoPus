@@ -1,10 +1,10 @@
 {
   "scripts": {
-    "dev": "ts-node-dev --respawn src/index.ts",
-    "populateKlines": "ts-node-dev src/populateKlines.ts",
-    "simulate": "ts-node src/commands/simulate.ts | pino-pretty",
-    "simulate2": "ts-node src/commands/simulate2.ts",
-    "simulate:graph": "ts-node src/commands/createSimulationGraph.ts",
+    "dev": "ts-node-dev -r tsconfig-paths/register --respawn src/index.ts",
+    "populateKlines": "ts-node -r tsconfig-paths/register src/populateKlines.ts",
+    "simulate": "ts-node -r tsconfig-paths/register src/commands/simulate.ts | pino-pretty",
+    "simulate2": "ts-node -r tsconfig-paths/register src/commands/simulate2.ts",
+    "simulate:graph": "ts-node -r tsconfig-paths/register src/commands/createSimulationGraph.ts",
     "db:migrate": "pnpm prisma migrate dev  --create-only && pnpm prisma generate",
     "db:push": "pnpm prisma db push"
   },
@@ -33,6 +33,7 @@
     "pino-pretty": "^9.1.1",
     "tozod": "^3.0.0",
     "ts-node": "^10.9.1",
+    "tsconfig-paths": "^4.1.0",
     "tulind": "^0.8.20",
     "zod": "^3.19.1"
   },
