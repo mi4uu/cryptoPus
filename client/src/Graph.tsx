@@ -3,18 +3,42 @@ import { trpc } from "@client/query/trpc";
 import { Grid, LoadingOverlay, Select, Button } from "@mantine/core";
 import { useState } from "react";
 import { DateRangePicker, DateRangePickerValue } from "@mantine/dates";
-import Plot from "react-plotly.js";
 import dayjs from "dayjs";
-import { PairEnumType } from "@server/enums";
+import { IndicatorType, PairEnumType } from "@server/enums";
 import { KlinesPlot } from "./plot/klines.plot";
-import { Menu } from "./Menu";
+import { Indicator } from "./Indicator";
+import _ from "lodash";
+import { selectedDateRange, selectedPair, selectedPeriod } from "./query/store";
+import { useAtom } from "jotai";
 export const Graph = () => {
-  const { data, isLoading } = trpc.getPairs.useQuery({});
-  const [pair, setPair] = useState<PairEnumType | null>(null);
-  const [value, setValue] = useState<DateRangePickerValue>([
-    dayjs().subtract(10, "d").toDate(),
-    dayjs().toDate(),
-  ]);
+  const { data, isLoading: isLoadingPairs } = trpc.getPairs.useQuery({});
+  const { data: periods, isLoading: isLoadingPeriods } =
+    trpc.getPeriods.useQuery({});
+
+  const [period, setPeriod] = useAtom(selectedPeriod);
+  const [pair, setPair] = useAtom(selectedPair);
+  const [value, setValue] = useAtom(selectedDateRange);
+  const [indicators, setIndicators] = useState<
+    { key: string; indicator: JSX.Element }[]
+  >([]);
+  const [indicatorsResults, setIndicatorsResults] = useState<{
+    [key: string]: {
+      type: IndicatorType;
+      results: any;
+    };
+  }>({});
+
+  const setIndicatorResult = (
+    key: string,
+    value: {
+      type: IndicatorType;
+      results: any;
+    }
+  ) => {
+    setIndicatorsResults({ ...indicatorsResults, ...{ [key]: value } });
+  };
+
+  const isLoading = isLoadingPairs || isLoadingPeriods;
   return (
     <>
       <LoadingOverlay visible={isLoading} overlayBlur={2} />
@@ -31,6 +55,17 @@ export const Graph = () => {
             onChange={(value) => setPair(value as PairEnumType)}
           />
         </Grid.Col>
+        <Grid.Col span={2}>
+          <Select
+            label="Select period"
+            placeholder="period"
+            data={Object.values(periods ? periods : {}).map((period) => ({
+              value: period.value,
+              label: period.value,
+            }))}
+            onChange={(value) => setPeriod(value)}
+          />
+        </Grid.Col>
         <Grid.Col span={4}>
           {" "}
           <DateRangePicker
@@ -40,14 +75,53 @@ export const Graph = () => {
             onChange={setValue}
           />
         </Grid.Col>
-        <Grid.Col span={4}></Grid.Col>
       </Grid>
-      {pair && value[0] && value[1] && (
+      <Grid>
+        <Grid.Col span={10}>Indicators:</Grid.Col>
+        <Grid.Col span={1} style={{ alignSelf: "flex-end" }}>
+          <Button
+            onClick={() => {
+              const key = _.uniqueId();
+              return setIndicators([
+                ...indicators,
+                {
+                  key,
+                  indicator: (
+                    <Indicator
+                      setIndicatorResults={setIndicatorResult}
+                      indicatorKey={key}
+                    />
+                  ),
+                },
+              ]);
+            }}
+          >
+            +
+          </Button>
+        </Grid.Col>
+      </Grid>
+      {indicators.map((indicator) => (
+        <Grid key={indicator.key}>
+          <Grid.Col span={10}>{indicator.indicator}</Grid.Col>
+          <Grid.Col span={1} style={{ alignSelf: "flex-end" }}>
+            <Button
+              onClick={() =>
+                setIndicators(indicators.filter((i) => i.key !== indicator.key))
+              }
+            >
+              -
+            </Button>
+          </Grid.Col>
+        </Grid>
+      ))}
+
+      {pair && value[0] && value[1] && period && (
         <KlinesPlot
+          indicatorsResults={indicatorsResults}
           pair={pair}
           dateFrom={value[0]}
           dateTo={value[1]}
-          period={"1h"}
+          period={period}
           setDateRange={setValue}
         />
       )}

@@ -7,3 +7,10 @@ export const trpc = createTRPCReact<AppRouter>({
   //     return { ctx };
   //   }
 });
+export const trpcClient = createTRPCProxyClient<AppRouter>({
+  links: [
+    httpBatchLink({
+      url: "/api/",
+    }),
+  ],
+});

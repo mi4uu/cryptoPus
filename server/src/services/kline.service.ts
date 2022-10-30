@@ -47,3 +47,7 @@ export const getKlines = async ({
   //     .exhaustive()
   return results;
 };
+export const getPeriods = async () => {
+  const results = await prisma.period.findMany({});
+  return results;
+};

@@ -28,6 +28,7 @@
     "@trpc/react-query": "10.0.0-proxy-beta.21",
     "@trpc/server": "10.0.0-proxy-beta.21",
     "dayjs": "^1.11.6",
+    "jotai": "^1.9.0",
     "plotly.js": "^2.16.1",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",

@@ -65,6 +65,7 @@ importers:
       "@types/react-plotly.js": ^2.5.2
       "@vitejs/plugin-react": ^2.1.0
       dayjs: ^1.11.6
+      jotai: ^1.9.0
       plotly.js: ^2.16.1
       react: ^18.2.0
       react-dom: ^18.2.0
@@ -89,6 +90,7 @@ importers:
       "@trpc/react-query": 10.0.0-proxy-beta.21_l4hm32oueg4vasltgnlon5dc5i
       "@trpc/server": 10.0.0-proxy-beta.21
       dayjs: 1.11.6
+      jotai: 1.9.0_otspjrsspon4ofp37rshhlhp2y
       plotly.js: 2.16.1
       react: 18.2.0
       react-dom: 18.2.0_react@18.2.0
@@ -6337,6 +6339,44 @@ packages:
     engines: { node: ">=10.13.0 < 13 || >=13.7.0" }
     dependencies:
       "@panva/asn1.js": 1.0.0
+    dev: false
+
+  /jotai/1.9.0_otspjrsspon4ofp37rshhlhp2y:
+    resolution:
+      {
+        integrity: sha512-XYpSlxbxujUCTA8PNkzfj3+zF6XVyzo6XMZIEic3gXQCpTDPfmqhUj2FR8kwUACK5weosFrSBhesrjwfILUCoQ==,
+      }
+    engines: { node: ">=12.7.0" }
+    peerDependencies:
+      "@babel/core": "*"
+      "@babel/template": "*"
+      immer: "*"
+      jotai-tanstack-query: "*"
+      jotai-urql: "*"
+      optics-ts: "*"
+      react: ">=16.8"
+      valtio: "*"
+      xstate: "*"
+    peerDependenciesMeta:
+      "@babel/core":
+        optional: true
+      "@babel/template":
+        optional: true
+      immer:
+        optional: true
+      jotai-tanstack-query:
+        optional: true
+      jotai-urql:
+        optional: true
+      optics-ts:
+        optional: true
+      valtio:
+        optional: true
+      xstate:
+        optional: true
+    dependencies:
+      "@babel/core": 7.19.6
+      react: 18.2.0
     dev: false
 
   /joycon/3.1.1:

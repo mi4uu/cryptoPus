@@ -1,5 +1,5 @@
 import { Kline } from "@prisma/client";
-import { PriceType } from "@server/enums";
+import { IndicatorType, PriceType } from "@server/enums";
 import {
   GetIndicatorParams,
   GetIndicatorForKlinesParams,
@@ -17,7 +17,9 @@ export const getIndicatorForKlines = async (
   const prices = klines.map((kline) => kline[_priceType].toNumber());
   const indicatorSelector = `get${params.indicator}`;
   if (indicatorSelector in indicators) {
-    const indicator: (params: GetIndicatorParams) => Promise<number[]> =
+    const indicator: (
+      params: GetIndicatorParams
+    ) => Promise<{ indicator: number[]; type: IndicatorType }> =
       indicators[indicatorSelector];
     return await indicator({ prices, options: params.options });
   }
