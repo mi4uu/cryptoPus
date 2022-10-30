@@ -3,7 +3,7 @@ import { trpc, trpcClient } from "@client/query/trpc";
 import { Grid, LoadingOverlay, Select, Button } from "@mantine/core";
 import { useEffect, useState } from "react";
 import { DateRangePicker, DateRangePickerValue } from "@mantine/dates";
-import dayjs from "dayjs";
+import dayjs, { ManipulateType } from "dayjs";
 import {
   Indicators,
   IndicatorType,
@@ -14,6 +14,9 @@ import {
 import { KlinesPlot } from "./plot/KlinesPlot";
 import { useAtom } from "jotai";
 import { selectedDateRange, selectedPair, selectedPeriod } from "./query/store";
+import Plot from "react-plotly.js";
+import { PlotType } from "plotly.js";
+import { splitPeriod } from "./helpers/helpers";
 export interface IndicatorProps {
   setIndicatorResults: (
     key: string,
@@ -25,9 +28,82 @@ export interface IndicatorProps {
   indicatorKey: string;
 }
 export interface IndicatorGraphProps {
-  something: string;
+  dateFrom: Date;
+  dateTo: Date;
+  pair: PairEnumType;
+  period: string;
+  indicator: Indicators;
+  priceType: PriceType;
+  periodUnit: ManipulateType;
+  periodCount: number;
 }
-export const IndicatorGraph = (props: IndicatorGraphProps) => {};
+const layout: Partial<Plotly.Layout> = {
+  width: 1240,
+  height: 200,
+  title: "",
+  autosize: true,
+  hovermode: "x",
+  dragmode: "pan",
+  //@ts-ignore
+  spikedistance: -1,
+  scrollZoom: false,
+  xaxis: {
+    showspikes: true,
+    spikemode: "across",
+    autorange: true,
+    rangeslider: { visible: false },
+  },
+};
+export const IndicatorGraph = ({
+  indicator,
+  pair,
+  period,
+  dateFrom,
+  dateTo,
+  priceType,
+  periodUnit,
+  periodCount,
+}: IndicatorGraphProps) => {
+  const { data, isLoading } = trpc.getIndicator.useQuery({
+    indicator,
+    pair,
+    period,
+    dateFrom,
+    dateTo,
+    priceType,
+  });
+  if (!data?.indicator) return null;
+  let time = dayjs(dateFrom);
+  const x = [time.toDate()];
+  for (const _ of data?.indicator) {
+    time = time.add(periodCount, periodUnit);
+    x.push(time.toDate());
+  }
+  const data_: Plotly.Data[] = [
+    {
+      x,
+      y: data.indicator,
+      type: data.type as PlotType,
+    },
+  ];
+  return (
+    <Plot
+      data={data_}
+      layout={layout}
+      // onRelayout={(event) => {
+      //   if ("xaxis.range[0]" in event && "xaxis.range[1]" in event) {
+      //     setDateRange([
+      //       dayjs(event["xaxis.range[0]"]).toDate(),
+      //       dayjs(event["xaxis.range[1]"]).toDate(),
+      //     ]);
+      //   }
+      // }}
+      config={{
+        displayModeBar: false,
+      }}
+    />
+  );
+};
 export const Indicator = (props: IndicatorProps) => {
   const [pair] = useAtom(selectedPair);
   const [parentPeriod] = useAtom(selectedPeriod);
@@ -35,36 +111,36 @@ export const Indicator = (props: IndicatorProps) => {
   const [period, setPeriod] = useState<string | null>(null);
   const [indicator, setIndicator] = useState<Indicators | null>(null);
   const [isLoading, setIsLoading] = useState<boolean>(false);
+  const [priceType, setPriceType] = useState<PriceType | null>(null);
   const { data: periods, isLoading: isLoadingPeriods } =
     trpc.getPeriods.useQuery({});
   const [dateRange] = useAtom(selectedDateRange);
   const [dateFrom, dateTo] = dateRange;
 
-  useEffect(() => {
-    console.log({ parentPeriod, indicator, periods, pair });
-    if (period && indicator && periods && pair && dateFrom && dateTo) {
-      const periodCount = Number(period.slice(0, period.length - 1));
-      const periodUnit = period.slice(-1);
-      trpcClient.getMacd
-        .query({
-          dateFrom: dayjs(dateFrom)
-            .subtract(periodCount * 50, periodUnit as "m" | "h" | "d")
-            .toISOString(),
-          dateTo: dateTo.toISOString(),
-          pair: pair,
-          period: period,
-          priceType: PriceType.close,
-        })
-        .then((macd) => {
-          if (macd?.indicator?.length) {
-            props.setIndicatorResults(props.indicatorKey, {
-              type: macd.type,
-              results: macd.indicator,
-            });
-          }
-        });
-    }
-  });
+  // useEffect(() => {
+  //   if (period && indicator && periods && pair && dateFrom && dateTo) {
+  //     const periodCount = Number(period.slice(0, period.length - 1));
+  //     const periodUnit = period.slice(-1);
+  //     trpcClient.getMacd
+  //       .query({
+  //         dateFrom: dayjs(dateFrom)
+  //           .subtract(periodCount * 50, periodUnit as "m" | "h" | "d")
+  //           .toISOString(),
+  //         dateTo: dateTo.toISOString(),
+  //         pair: pair,
+  //         period: period,
+  //         priceType: PriceType.close,
+  //       })
+  //       .then((macd) => {
+  //         if (macd?.indicator?.length) {
+  //           props.setIndicatorResults(props.indicatorKey, {
+  //             type: macd.type,
+  //             results: macd.indicator,
+  //           });
+  //         }
+  //       });
+  //   }
+  // });
 
   return (
     <>
@@ -93,7 +169,37 @@ export const Indicator = (props: IndicatorProps) => {
             onChange={(value) => setPeriod(value)}
           />
         </Grid.Col>
+        <Grid.Col span={2}>
+          <Select
+            label="Select price"
+            placeholder="price"
+            data={Object.values(PriceType).map((pricetype) => ({
+              value: pricetype,
+              label: pricetype,
+            }))}
+            onChange={(value: PriceType) => setPriceType(value)}
+          />
+        </Grid.Col>
       </Grid>
+
+      {period &&
+        indicator &&
+        periods &&
+        pair &&
+        dateFrom &&
+        dateTo &&
+        priceType && (
+          <IndicatorGraph
+            periodCount={splitPeriod(period).periodCount}
+            periodUnit={splitPeriod(period).periodUnit}
+            priceType={priceType}
+            period={period}
+            indicator={indicator}
+            pair={pair}
+            dateFrom={dateFrom}
+            dateTo={dateTo}
+          />
+        )}
     </>
   );
 };
