@@ -1,4 +1,6 @@
+import { defaultLayout } from "@client/helpers/helpers";
 import {
+  hover,
   selectedDateRange,
   selectedPair,
   selectedPeriod,
@@ -10,7 +12,9 @@ import { PairEnumType, PriceType } from "@server/enums";
 import { IconX } from "@tabler/icons";
 import dayjs from "dayjs";
 import { SetStateAction, useAtom } from "jotai";
+import { useEffect, useState } from "react";
 import Plot from "react-plotly.js";
+import * as myPlotly from "plotly.js-dist-min";
 
 export const KlinesPlot = () => {
   const [period] = useAtom(selectedPeriod);
@@ -59,6 +63,18 @@ const KlinesPlotInternal = ({
   period,
   setDateRange,
 }: KlinesPlotInternalProps) => {
+  const [hoverPosition, setHover] = useAtom(hover);
+
+  useEffect(() => {
+    const containers = document.getElementsByClassName("js-plotly-plot");
+
+    for (const container of containers) {
+      if (hoverPosition) {
+        //@ts-ignore
+        myPlotly.Fx.hover(container, { xval: hoverPosition }, ["xy"]);
+      }
+    }
+  }, [hoverPosition]);
   const { data, isLoading } = trpc.getKlines.useQuery({
     dateFrom,
     dateTo,
@@ -100,17 +116,12 @@ const KlinesPlotInternal = ({
   ];
 
   const layout: Partial<Plotly.Layout> = {
-    width: 1240,
+    ...defaultLayout,
     height: 600,
     title: "",
-    autosize: true,
-    hovermode: "x",
-    dragmode: "pan",
-    //@ts-ignore
-    spikedistance: -1,
+
     yaxis: { domain: [0, 0.8] },
     yaxis2: { domain: [0.81, 1] },
-    scrollZoom: false,
     xaxis: {
       showspikes: true,
       spikemode: "across",
@@ -127,6 +138,7 @@ const KlinesPlotInternal = ({
       /> */}
 
       <Plot
+        debug={true}
         data={plotData}
         layout={layout}
         onRelayout={(event) => {
@@ -139,6 +151,11 @@ const KlinesPlotInternal = ({
         }}
         config={{
           displayModeBar: false,
+        }}
+        onHover={(event) => {
+          if (event.xvals[0]) {
+            setHover(event.xvals[0] as number);
+          }
         }}
       />
     </>

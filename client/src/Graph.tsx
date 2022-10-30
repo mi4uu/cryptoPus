@@ -4,12 +4,23 @@ import { Grid, LoadingOverlay, Select, Button } from "@mantine/core";
 import { useState } from "react";
 import { DateRangePicker, DateRangePickerValue } from "@mantine/dates";
 import dayjs from "dayjs";
-import { IndicatorType, PairEnumType } from "@server/enums";
+import {
+  Indicators,
+  IndicatorType,
+  PairEnumType,
+  PriceType,
+} from "@server/enums";
 import { KlinesPlot } from "./plot/KlinesPlot";
-import { Indicator } from "./Indicator";
+import { Indicator, IndicatorGraph } from "./Indicator";
 import _ from "lodash";
 import { selectedDateRange, selectedPair, selectedPeriod } from "./query/store";
 import { useAtom } from "jotai";
+import { splitPeriod } from "./helpers/helpers";
+export interface IndicatorsResultsValue {
+  period: string;
+  priceType: PriceType;
+  indicator: Indicators;
+}
 export const Graph = () => {
   const { data, isLoading: isLoadingPairs } = trpc.getPairs.useQuery({});
   const { data: periods, isLoading: isLoadingPeriods } =
@@ -22,19 +33,10 @@ export const Graph = () => {
     { key: string; indicator: JSX.Element }[]
   >([]);
   const [indicatorsResults, setIndicatorsResults] = useState<{
-    [key: string]: {
-      type: IndicatorType;
-      results: any;
-    };
+    [key: string]: IndicatorsResultsValue;
   }>({});
-
-  const setIndicatorResult = (
-    key: string,
-    value: {
-      type: IndicatorType;
-      results: any;
-    }
-  ) => {
+  const [dateFrom, dateTo] = value;
+  const setIndicatorResult = (key: string, value: IndicatorsResultsValue) => {
     setIndicatorsResults({ ...indicatorsResults, ...{ [key]: value } });
   };
 
@@ -76,8 +78,6 @@ export const Graph = () => {
           />
         </Grid.Col>
       </Grid>
-
-      <KlinesPlot />
       {indicators.map((indicator) => (
         <Grid key={indicator.key}>
           <Grid.Col span={10}>{indicator.indicator}</Grid.Col>
@@ -111,6 +111,36 @@ export const Graph = () => {
       >
         Add indicator
       </Button>
+      <KlinesPlot />
+      {Object.entries(indicatorsResults).map(([key, indicatorsResults]) => {
+        if (
+          !dateFrom ||
+          !dateTo ||
+          !pair ||
+          !indicatorsResults.indicator ||
+          !indicatorsResults.period ||
+          !indicatorsResults.priceType
+        )
+          return <div className="indicatorWrap">placeholder</div>;
+        const { periodCount, periodUnit } = splitPeriod(
+          indicatorsResults.period
+        );
+        return (
+          <div className="indicatorWrap">
+            <IndicatorGraph
+              key={key}
+              dateFrom={dateFrom}
+              dateTo={dateTo}
+              pair={pair}
+              indicator={indicatorsResults.indicator}
+              period={indicatorsResults.period}
+              priceType={indicatorsResults.priceType}
+              periodCount={periodCount}
+              periodUnit={periodUnit}
+            />
+          </div>
+        );
+      })}
     </>
   );
 };

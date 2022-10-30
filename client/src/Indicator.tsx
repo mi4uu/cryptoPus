@@ -13,18 +13,18 @@ import {
 } from "@server/enums";
 import { KlinesPlot } from "./plot/KlinesPlot";
 import { useAtom } from "jotai";
-import { selectedDateRange, selectedPair, selectedPeriod } from "./query/store";
+import {
+  hover,
+  selectedDateRange,
+  selectedPair,
+  selectedPeriod,
+} from "./query/store";
 import Plot from "react-plotly.js";
 import { PlotType } from "plotly.js";
-import { splitPeriod } from "./helpers/helpers";
+import { defaultLayout, splitPeriod } from "./helpers/helpers";
+import { IndicatorsResultsValue } from "./Graph";
 export interface IndicatorProps {
-  setIndicatorResults: (
-    key: string,
-    value: {
-      type: IndicatorType;
-      results: any;
-    }
-  ) => void;
+  setIndicatorResults: (key: string, value: IndicatorsResultsValue) => void;
   indicatorKey: string;
 }
 export interface IndicatorGraphProps {
@@ -38,15 +38,9 @@ export interface IndicatorGraphProps {
   periodCount: number;
 }
 const layout: Partial<Plotly.Layout> = {
-  width: 1240,
+  ...defaultLayout,
   height: 200,
   title: "",
-  autosize: true,
-  hovermode: "x",
-  dragmode: "pan",
-  //@ts-ignore
-  spikedistance: -1,
-  scrollZoom: false,
   xaxis: {
     showspikes: true,
     spikemode: "across",
@@ -72,34 +66,30 @@ export const IndicatorGraph = ({
     dateTo,
     priceType,
   });
-  if (!data?.indicator) return null;
-  let time = dayjs(dateFrom);
-  const x = [time.toDate()];
-  for (const _ of data?.indicator) {
-    time = time.add(periodCount, periodUnit);
-    x.push(time.toDate());
-  }
-  const data_: Plotly.Data[] = [
-    {
-      x,
-      y: data.indicator,
-      type: data.type as PlotType,
-    },
-  ];
+  const [hoverPosition, setHover] = useAtom(hover);
+  const [_, setDateRange] = useAtom(selectedDateRange);
+
+  if (!data) return <div style={{ height: 200, width: 1240 }}>placeholder</div>;
+
   return (
     <Plot
-      data={data_}
+      data={data}
       layout={layout}
-      // onRelayout={(event) => {
-      //   if ("xaxis.range[0]" in event && "xaxis.range[1]" in event) {
-      //     setDateRange([
-      //       dayjs(event["xaxis.range[0]"]).toDate(),
-      //       dayjs(event["xaxis.range[1]"]).toDate(),
-      //     ]);
-      //   }
-      // }}
+      onRelayout={(event) => {
+        if ("xaxis.range[0]" in event && "xaxis.range[1]" in event) {
+          setDateRange([
+            dayjs(event["xaxis.range[0]"]).toDate(),
+            dayjs(event["xaxis.range[1]"]).toDate(),
+          ]);
+        }
+      }}
       config={{
         displayModeBar: false,
+      }}
+      onHover={(event) => {
+        if (event.xvals[0]) {
+          setHover(event.xvals[0] as number);
+        }
       }}
     />
   );
@@ -116,7 +106,23 @@ export const Indicator = (props: IndicatorProps) => {
     trpc.getPeriods.useQuery({});
   const [dateRange] = useAtom(selectedDateRange);
   const [dateFrom, dateTo] = dateRange;
-
+  useEffect(() => {
+    if (
+      period &&
+      indicator &&
+      periods &&
+      pair &&
+      dateFrom &&
+      dateTo &&
+      priceType
+    ) {
+      props.setIndicatorResults(props.indicatorKey, {
+        period,
+        priceType,
+        indicator,
+      });
+    }
+  });
   // useEffect(() => {
   //   if (period && indicator && periods && pair && dateFrom && dateTo) {
   //     const periodCount = Number(period.slice(0, period.length - 1));
@@ -182,13 +188,13 @@ export const Indicator = (props: IndicatorProps) => {
         </Grid.Col>
       </Grid>
 
-      {period &&
+      {/* {period &&
         indicator &&
         periods &&
         pair &&
         dateFrom &&
         dateTo &&
-        priceType && (
+        priceType ? (
           <IndicatorGraph
             periodCount={splitPeriod(period).periodCount}
             periodUnit={splitPeriod(period).periodUnit}
@@ -199,7 +205,7 @@ export const Indicator = (props: IndicatorProps) => {
             dateFrom={dateFrom}
             dateTo={dateTo}
           />
-        )}
+        ):<div style={{height:200, width:1240 }}>no data</div>} */}
     </>
   );
 };

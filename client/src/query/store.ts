@@ -8,3 +8,4 @@ export const selectedDateRange = atom<DateRangePickerValue>([
   dayjs().subtract(10, "d").toDate(),
   dayjs().toDate(),
 ]);
+export const hover = atom<number | null>(null);

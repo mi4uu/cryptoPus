@@ -12,3 +12,19 @@ export const splitPeriod = (period: Period | string) => {
     periodUnit,
   };
 };
+export const defaultLayout = {
+  width: 1240,
+  margin: {
+    l: 30,
+    r: 0,
+    b: 30,
+    t: 0,
+    pad: 0,
+  },
+  autosize: true,
+  hovermode: "x" as "x",
+  dragmode: "pan" as "pan",
+  //@ts-ignore
+  spikedistance: -1,
+  scrollZoom: false,
+};
