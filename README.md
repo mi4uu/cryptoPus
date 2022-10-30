@@ -10,7 +10,7 @@
 
 `pnpm dev`
 
-##history
+## history
 
 v.0.01
 ![logo](./history/v01.gif)
