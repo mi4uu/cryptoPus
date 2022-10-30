@@ -11,7 +11,7 @@ import {
   Period,
   PriceType,
 } from "@server/enums";
-import { KlinesPlot } from "./plot/klines.plot";
+import { KlinesPlot } from "./plot/KlinesPlot";
 import { useAtom } from "jotai";
 import { selectedDateRange, selectedPair, selectedPeriod } from "./query/store";
 export interface IndicatorProps {
@@ -24,6 +24,10 @@ export interface IndicatorProps {
   ) => void;
   indicatorKey: string;
 }
+export interface IndicatorGraphProps {
+  something: string;
+}
+export const IndicatorGraph = (props: IndicatorGraphProps) => {};
 export const Indicator = (props: IndicatorProps) => {
   const [pair] = useAtom(selectedPair);
   const [parentPeriod] = useAtom(selectedPeriod);

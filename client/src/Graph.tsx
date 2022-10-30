@@ -5,7 +5,7 @@ import { useState } from "react";
 import { DateRangePicker, DateRangePickerValue } from "@mantine/dates";
 import dayjs from "dayjs";
 import { IndicatorType, PairEnumType } from "@server/enums";
-import { KlinesPlot } from "./plot/klines.plot";
+import { KlinesPlot } from "./plot/KlinesPlot";
 import { Indicator } from "./Indicator";
 import _ from "lodash";
 import { selectedDateRange, selectedPair, selectedPeriod } from "./query/store";
@@ -76,30 +76,8 @@ export const Graph = () => {
           />
         </Grid.Col>
       </Grid>
-      <Grid>
-        <Grid.Col span={10}>Indicators:</Grid.Col>
-        <Grid.Col span={1} style={{ alignSelf: "flex-end" }}>
-          <Button
-            onClick={() => {
-              const key = _.uniqueId();
-              return setIndicators([
-                ...indicators,
-                {
-                  key,
-                  indicator: (
-                    <Indicator
-                      setIndicatorResults={setIndicatorResult}
-                      indicatorKey={key}
-                    />
-                  ),
-                },
-              ]);
-            }}
-          >
-            +
-          </Button>
-        </Grid.Col>
-      </Grid>
+
+      <KlinesPlot />
       {indicators.map((indicator) => (
         <Grid key={indicator.key}>
           <Grid.Col span={10}>{indicator.indicator}</Grid.Col>
@@ -114,17 +92,25 @@ export const Graph = () => {
           </Grid.Col>
         </Grid>
       ))}
-
-      {pair && value[0] && value[1] && period && (
-        <KlinesPlot
-          indicatorsResults={indicatorsResults}
-          pair={pair}
-          dateFrom={value[0]}
-          dateTo={value[1]}
-          period={period}
-          setDateRange={setValue}
-        />
-      )}
+      <Button
+        onClick={() => {
+          const key = _.uniqueId();
+          return setIndicators([
+            ...indicators,
+            {
+              key,
+              indicator: (
+                <Indicator
+                  setIndicatorResults={setIndicatorResult}
+                  indicatorKey={key}
+                />
+              ),
+            },
+          ]);
+        }}
+      >
+        Add indicator
+      </Button>
     </>
   );
 };

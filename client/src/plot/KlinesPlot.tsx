@@ -1,27 +1,70 @@
+import {
+  selectedDateRange,
+  selectedPair,
+  selectedPeriod,
+} from "@client/query/store";
 import { trpc } from "@client/query/trpc";
 import { LoadingOverlay } from "@mantine/core";
 import { DateRangePickerValue } from "@mantine/dates";
 import { PairEnumType, PriceType } from "@server/enums";
+import { IconX } from "@tabler/icons";
 import dayjs from "dayjs";
+import { SetStateAction, useAtom } from "jotai";
 import Plot from "react-plotly.js";
 
-interface KlinesPlotProps {
+export const KlinesPlot = () => {
+  const [period] = useAtom(selectedPeriod);
+  const [pair] = useAtom(selectedPair);
+  const [dateRange, setDateRange] = useAtom(selectedDateRange);
+  const [dateFrom, dateTo] = dateRange;
+  if (!dateFrom || !dateTo || !pair || !period)
+    return (
+      <div
+        style={{
+          width: 1240,
+          height: 600,
+        }}
+      >
+        <IconX />
+      </div>
+    );
+  return (
+    <div
+      style={{
+        width: 1240,
+        height: 600,
+      }}
+    >
+      <KlinesPlotInternal
+        dateFrom={dateFrom}
+        dateTo={dateTo}
+        pair={pair}
+        period={period}
+        setDateRange={setDateRange}
+      />
+    </div>
+  );
+};
+interface KlinesPlotInternalProps {
   dateFrom: Date;
   dateTo: Date;
   pair: PairEnumType;
   period: string;
-  setDateRange: React.Dispatch<React.SetStateAction<DateRangePickerValue>>;
-  indicatorsResults: any;
+  setDateRange: (update: SetStateAction<DateRangePickerValue>) => void;
 }
-export const KlinesPlot = (props: KlinesPlotProps) => {
+const KlinesPlotInternal = ({
+  dateFrom,
+  dateTo,
+  pair,
+  period,
+  setDateRange,
+}: KlinesPlotInternalProps) => {
   const { data, isLoading } = trpc.getKlines.useQuery({
-    dateFrom: props.dateFrom.toISOString(),
-    dateTo: props.dateTo.toISOString(),
-    pair: props.pair,
-    period: props.period,
+    dateFrom,
+    dateTo,
+    pair,
+    period,
   });
-  const periodCount = Number(props.period.slice(0, props.period.length - 1));
-  const periodUnit = props.period.slice(-1);
 
   if (!data) return null;
   const x = data.map((k) => k.timestamp);
@@ -55,22 +98,10 @@ export const KlinesPlot = (props: KlinesPlotProps) => {
       name: "VOLUME",
     },
   ];
-  let yaxies = 2;
-  for (const indicator of Object.values(props.indicatorsResults)) {
-    yaxies += 1;
-    const indicatorPlot: Plotly.Data = {
-      x,
-      y: (indicator as any).results.splice(x.length * -1),
-      type: (indicator as any).type,
-      xaxis: "x",
-      yaxis: `y${yaxies}`,
-      name: "MACD",
-    };
-    plotData.push(indicatorPlot);
-  }
+
   const layout: Partial<Plotly.Layout> = {
     width: 1240,
-    height: 800,
+    height: 600,
     title: "",
     autosize: true,
     hovermode: "x",
@@ -78,8 +109,8 @@ export const KlinesPlot = (props: KlinesPlotProps) => {
     //@ts-ignore
     spikedistance: -1,
     yaxis: { domain: [0, 0.8] },
-    yaxis2: { domain: [0.81, 0.89] },
-    yaxis3: { domain: [0.9, 1], autorange: true },
+    yaxis2: { domain: [0.81, 1] },
+    scrollZoom: false,
     xaxis: {
       showspikes: true,
       spikemode: "across",
@@ -87,23 +118,29 @@ export const KlinesPlot = (props: KlinesPlotProps) => {
       rangeslider: { visible: false },
     },
   };
+
   return (
-    <div>
+    <>
       <LoadingOverlay visible={isLoading} overlayBlur={2} />
+      {/* <Plot
+        data={{data:plotData, layout}}
+      /> */}
 
       <Plot
         data={plotData}
         layout={layout}
         onRelayout={(event) => {
           if ("xaxis.range[0]" in event && "xaxis.range[1]" in event) {
-            props.setDateRange([
+            setDateRange([
               dayjs(event["xaxis.range[0]"]).toDate(),
               dayjs(event["xaxis.range[1]"]).toDate(),
             ]);
           }
-          //  console.log(event)
+        }}
+        config={{
+          displayModeBar: false,
         }}
       />
-    </div>
+    </>
   );
 };

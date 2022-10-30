@@ -12,6 +12,9 @@
       rel="stylesheet"
     />
     <script>
+      if (typeof window.global === "undefined") {
+        window.global = window;
+      }
       document.head = document.head || document.getElementsByTagName("head")[0];
 
       function changeFavicon(src) {

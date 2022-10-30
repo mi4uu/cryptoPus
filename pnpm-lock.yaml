@@ -60,6 +60,7 @@ importers:
       "@trpc/react-query": 10.0.0-proxy-beta.21
       "@trpc/server": 10.0.0-proxy-beta.21
       "@types/plotly.js": ^2.12.8
+      "@types/plotly.js-dist-min": ^2.3.1
       "@types/react": ^18.0.17
       "@types/react-dom": ^18.0.6
       "@types/react-plotly.js": ^2.5.2
@@ -67,6 +68,7 @@ importers:
       dayjs: ^1.11.6
       jotai: ^1.9.0
       plotly.js: ^2.16.1
+      plotly.js-dist-min: ^2.16.1
       react: ^18.2.0
       react-dom: ^18.2.0
       react-plotly.js: ^2.6.0
@@ -92,6 +94,7 @@ importers:
       dayjs: 1.11.6
       jotai: 1.9.0_otspjrsspon4ofp37rshhlhp2y
       plotly.js: 2.16.1
+      plotly.js-dist-min: 2.16.1
       react: 18.2.0
       react-dom: 18.2.0_react@18.2.0
       react-plotly.js: 2.6.0_tlnavpnfh2zh7zwbcddzgqjy24
@@ -99,6 +102,7 @@ importers:
       vite-tsconfig-paths: 3.5.2_vite@3.1.8
     devDependencies:
       "@types/plotly.js": 2.12.8
+      "@types/plotly.js-dist-min": 2.3.1
       "@types/react": 18.0.21
       "@types/react-dom": 18.0.6
       "@types/react-plotly.js": 2.5.2
@@ -2126,6 +2130,15 @@ packages:
         integrity: sha512-//oorEZjL6sbPcKUaCdIGlIUeH26mgzimjBB77G6XRgnDl/L5wOnpyBGRe/Mmf5CVW3PwEBE1NjiMZ/ssFh4wA==,
       }
     dev: false
+
+  /@types/plotly.js-dist-min/2.3.1:
+    resolution:
+      {
+        integrity: sha512-9+rTvlyKDclIB9twal6ou6unUN6iTATLcRvakoFYaHGPnVRNe06LbUGOcgD8O+sddBFz3y2kS2hTKbUPGeVsHA==,
+      }
+    dependencies:
+      "@types/plotly.js": 2.12.8
+    dev: true
 
   /@types/plotly.js/2.12.8:
     resolution:
@@ -7846,6 +7859,13 @@ packages:
         integrity: sha512-8V9+HQPupnaXMA23c5hvl69zXvTwTzyAYasnkb0Tts4XvO4CliqONMOnvlq26rkhLC3nWDFBJf73LU1e1VZLaQ==,
       }
     engines: { node: ">= 6" }
+    dev: false
+
+  /plotly.js-dist-min/2.16.1:
+    resolution:
+      {
+        integrity: sha512-SB7xRacqoQdrJ8vO461ISLi5v3p42RnLqi0PDn0GxlJRSE1bIfDeQmTs8kL0vJaeaaWnmON8XDF78tzbpgSaDg==,
+      }
     dev: false
 
   /plotly.js/2.16.1:
