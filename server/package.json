@@ -1,6 +1,6 @@
 {
   "scripts": {
-    "dev": "ts-node-dev -r tsconfig-paths/register --respawn src/index.ts",
+    "dev": "ts-node-dev -r tsconfig-paths/register --respawn --transpile-only  --inspect=4321  src/index.ts | pnpm pino-pretty",
     "populateKlines": "ts-node -r tsconfig-paths/register src/populateKlines.ts",
     "simulate": "ts-node -r tsconfig-paths/register src/commands/simulate.ts | pino-pretty",
     "simulate2": "ts-node -r tsconfig-paths/register src/commands/simulate2.ts",
@@ -31,6 +31,7 @@
     "jsonwebtoken": "^8.5.1",
     "pino": "^8.7.0",
     "pino-pretty": "^9.1.1",
+    "technicalindicators": "^3.1.0",
     "tozod": "^3.0.0",
     "ts-node": "^10.9.1",
     "tsconfig-paths": "^4.1.0",

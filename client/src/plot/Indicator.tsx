@@ -1,27 +1,17 @@
-import "./App.css";
-import { trpc, trpcClient } from "@client/query/trpc";
-import { Grid, LoadingOverlay, Select, Button } from "@mantine/core";
+import { trpc } from "@client/query/trpc";
+import { Grid, LoadingOverlay, Select } from "@mantine/core";
 import { useEffect, useState } from "react";
-import { DateRangePicker, DateRangePickerValue } from "@mantine/dates";
 import dayjs, { ManipulateType } from "dayjs";
-import {
-  Indicators,
-  IndicatorType,
-  PairEnumType,
-  Period,
-  PriceType,
-} from "@server/enums";
-import { KlinesPlot } from "./plot/KlinesPlot";
+import { Indicators, PairEnumType, PriceType } from "@server/enums";
 import { useAtom } from "jotai";
 import {
   hover,
   selectedDateRange,
   selectedPair,
   selectedPeriod,
-} from "./query/store";
+} from "../query/store";
 import Plot from "react-plotly.js";
-import { PlotType } from "plotly.js";
-import { defaultLayout, splitPeriod } from "./helpers/helpers";
+import { defaultLayout } from "../helpers/helpers";
 import { IndicatorsResultsValue } from "./Graph";
 export interface IndicatorProps {
   setIndicatorResults: (key: string, value: IndicatorsResultsValue) => void;

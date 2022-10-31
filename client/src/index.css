@@ -1,7 +1,3 @@
-body,
-* {
-  font-family: "Montserrat", sans-serif !important;
-}
 .appHeader {
   font-size: 35px;
   font-family: "Amatic SC", cursive !important;
@@ -10,8 +6,6 @@ body,
 }
 .appHeader img {
   height: 40px;
-  top: 5px;
-  position: relative;
 }
 .menuHeader {
   font-size: 30px;

@@ -27,4 +27,5 @@ export const defaultLayout = {
   //@ts-ignore
   spikedistance: -1,
   scrollZoom: false,
+  showlegend: true,
 };

@@ -13,8 +13,6 @@ export function AppWrapper() {
   const [trpcClient] = useState(() =>
     trpc.createClient({
       links: [
-        // @ts-ignore
-
         httpBatchLink({
           url: "/api/",
           //  optional
@@ -31,7 +29,17 @@ export function AppWrapper() {
     <trpc.Provider client={trpcClient} queryClient={queryClient}>
       <QueryClientProvider client={queryClient}>
         <BrowserRouter>
-          <App />
+          <MantineProvider
+            theme={{
+              fontFamily: "Montserrat",
+              colorScheme: "light",
+              primaryColor: "orange",
+            }}
+            withGlobalStyles
+            withNormalizeCSS
+          >
+            <App />
+          </MantineProvider>
         </BrowserRouter>
       </QueryClientProvider>
     </trpc.Provider>

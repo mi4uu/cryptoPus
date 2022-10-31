@@ -1,21 +1,19 @@
-import "./App.css";
 import { trpc } from "@client/query/trpc";
 import { Grid, LoadingOverlay, Select, Button } from "@mantine/core";
 import { useState } from "react";
 import { DateRangePicker, DateRangePickerValue } from "@mantine/dates";
 import dayjs from "dayjs";
-import {
-  Indicators,
-  IndicatorType,
-  PairEnumType,
-  PriceType,
-} from "@server/enums";
-import { KlinesPlot } from "./plot/KlinesPlot";
+import { Indicators, PairEnumType, PriceType } from "@server/enums";
+import { KlinesPlot } from "./KlinesPlot";
 import { Indicator, IndicatorGraph } from "./Indicator";
 import _ from "lodash";
-import { selectedDateRange, selectedPair, selectedPeriod } from "./query/store";
+import {
+  selectedDateRange,
+  selectedPair,
+  selectedPeriod,
+} from "../query/store";
 import { useAtom } from "jotai";
-import { splitPeriod } from "./helpers/helpers";
+import { splitPeriod } from "../helpers/helpers";
 export interface IndicatorsResultsValue {
   period: string;
   priceType: PriceType;
@@ -54,6 +52,7 @@ export const Graph = () => {
               value: pair,
               label: pair,
             }))}
+            value={pair}
             onChange={(value) => setPair(value as PairEnumType)}
           />
         </Grid.Col>
@@ -65,6 +64,7 @@ export const Graph = () => {
               value: period.value,
               label: period.value,
             }))}
+            value={period}
             onChange={(value) => setPeriod(value)}
           />
         </Grid.Col>
@@ -121,14 +121,17 @@ export const Graph = () => {
           !indicatorsResults.period ||
           !indicatorsResults.priceType
         )
-          return <div className="indicatorWrap">placeholder</div>;
+          return (
+            <div key={key} className="indicatorWrap">
+              placeholder
+            </div>
+          );
         const { periodCount, periodUnit } = splitPeriod(
           indicatorsResults.period
         );
         return (
-          <div className="indicatorWrap">
+          <div className="indicatorWrap" key={key}>
             <IndicatorGraph
-              key={key}
               dateFrom={dateFrom}
               dateTo={dateTo}
               pair={pair}

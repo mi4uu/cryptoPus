@@ -1,7 +1,8 @@
 import { AppShell, Box, Header, Navbar, ScrollArea } from "@mantine/core";
-import { Graph } from "./Graph";
+import { Graph } from "./plot/Graph";
 import { Menu } from "./Menu";
 import { User } from "./User";
+import "./App.css";
 
 export const App = () => {
   return (

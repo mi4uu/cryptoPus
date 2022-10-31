@@ -9,7 +9,7 @@
     "test-serve": "vitest run -c vitest.config.e2e.ts",
     "test-build": "VITE_TEST_BUILD=1 vitest run -c vitest.config.e2e.ts",
     "test-unit": "vitest run",
-    "dev": "pnpm -r --parallel --filter='./*' run dev"
+    "dev": "pnpm -r --parallel --filter='./*' run dev "
   },
   "engines": {
     "npm": ">=8.19.0 <9.0.0",
@@ -24,6 +24,7 @@
     "ts-pattern": "^4.0.5"
   },
   "devDependencies": {
+    "pino-pretty": "^9.1.1",
     "@types/lodash": "^4.14.186",
     "@types/node": "^18.11.2",
     "eslint": "~8.15.0",

@@ -8,10 +8,6 @@ export enum PriceType {
 }
 export enum Indicators {
   macd = "Macd",
+  rsi = "Rsi",
 }
 export { PairEnumType, Period };
-
-export enum IndicatorType {
-  bar = "bar",
-  onKlines = "onklines",
-}
