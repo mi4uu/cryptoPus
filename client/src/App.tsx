@@ -1,5 +1,5 @@
 import { AppShell, Box, Header, Navbar, ScrollArea } from "@mantine/core";
-import { Graph } from "./plot/Graph";
+import { Plot } from "./Plot/Plot";
 import { Menu } from "./Menu";
 import { User } from "./User";
 import "./App.css";
@@ -17,7 +17,7 @@ export const App = () => {
         <img src="/logo.gif" alt="cryptopus logo" /> Cryptopus
       </Header>
 
-      <Graph />
+      <Plot />
     </>
   );
 };

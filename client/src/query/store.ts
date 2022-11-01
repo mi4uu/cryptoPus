@@ -1,5 +1,6 @@
 import { DateRangePickerValue } from "@mantine/dates";
-import { PairEnumType } from "@server/enums";
+import { PairEnumType } from "@server/utils/prisma";
+
 import dayjs from "dayjs";
 import { atom, useAtom } from "jotai";
 export const selectedPair = atom<PairEnumType | null>(PairEnumType.BTCUSDT);

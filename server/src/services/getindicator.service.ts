@@ -1,6 +1,5 @@
 import { PlotlyData } from "@client/helpers/types";
-import { Kline } from "@prisma/client";
-import { IndicatorType, PriceType } from "@server/enums";
+import { PriceType } from "@shared/enums";
 import {
   GetIndicatorParams,
   GetIndicatorForKlinesParams,

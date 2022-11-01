@@ -1,9 +1,9 @@
 import { trpc } from "@client/query/trpc";
 import { Grid, LoadingOverlay, Select, Button } from "@mantine/core";
 import { useState } from "react";
-import { DateRangePicker, DateRangePickerValue } from "@mantine/dates";
-import dayjs from "dayjs";
-import { Indicators, PairEnumType, PriceType } from "@server/enums";
+import { DateRangePicker } from "@mantine/dates";
+import { Indicators, PriceType } from "shared/enums";
+
 import { KlinesPlot } from "./KlinesPlot";
 import { Indicator, IndicatorGraph } from "./Indicator";
 import _ from "lodash";
@@ -14,13 +14,13 @@ import {
 } from "../query/store";
 import { useAtom } from "jotai";
 import { splitPeriod } from "../helpers/helpers";
+import { PairEnumType } from "@server/utils/prisma";
 export interface IndicatorsResultsValue {
   period: string;
   priceType: PriceType;
   indicator: Indicators;
 }
-export const Graph = () => {
-  const { data, isLoading: isLoadingPairs } = trpc.getPairs.useQuery({});
+export const Plot = () => {
   const { data: periods, isLoading: isLoadingPeriods } =
     trpc.getPeriods.useQuery({});
 
@@ -38,7 +38,7 @@ export const Graph = () => {
     setIndicatorsResults({ ...indicatorsResults, ...{ [key]: value } });
   };
 
-  const isLoading = isLoadingPairs || isLoadingPeriods;
+  const isLoading = isLoadingPeriods;
   return (
     <>
       <LoadingOverlay visible={isLoading} overlayBlur={2} />
@@ -48,7 +48,7 @@ export const Graph = () => {
           <Select
             label="Select pair"
             placeholder="pair"
-            data={Object.values(data ? data : {}).map((pair) => ({
+            data={Object.values(PairEnumType).map((pair) => ({
               value: pair,
               label: pair,
             }))}
@@ -93,6 +93,7 @@ export const Graph = () => {
         </Grid>
       ))}
       <Button
+        style={{ marginTop: 15, marginBottom: 15 }}
         onClick={() => {
           const key = _.uniqueId();
           return setIndicators([

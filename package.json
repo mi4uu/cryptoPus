@@ -1,7 +1,7 @@
 {
-  "name": "crypto-watch",
-  "version": "0.0.0",
-  "license": "MIT",
+  "name": "cryptopus",
+  "version": "0.0.1",
+  "license": "meAndOnlyMeCanUseIt",
   "scripts": {
     "typecheck": "tsc -p server --noEmit && tsc -p client --noEmit",
     "lint": "eslint --cache .",
@@ -21,7 +21,8 @@
     "dotenv": "^16.0.3",
     "lodash": "^4.17.21",
     "only-allow": "^1.1.1",
-    "ts-pattern": "^4.0.5"
+    "ts-pattern": "^4.0.5",
+    "zod": "^3.19.1"
   },
   "devDependencies": {
     "pino-pretty": "^9.1.1",

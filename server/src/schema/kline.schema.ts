@@ -1,5 +1,5 @@
+import { PairEnumType } from "@prisma/client";
 import { z } from "zod";
-import { PairEnumType } from "@server/enums";
 
 export const klineSelector = z.object({
   pair: z.nativeEnum(PairEnumType),

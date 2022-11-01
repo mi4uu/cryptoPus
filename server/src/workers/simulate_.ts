@@ -1,7 +1,7 @@
 import * as dotenv from "dotenv";
 import day from "dayjs";
 import { KlineInterval, MainClient } from "binance";
-import { prisma } from "../utils/prisma";
+import { getPrismaClient } from "../utils/prisma";
 import { PairEnumType } from "@prisma/client";
 import { indicators } from "tulind";
 import { Decimal } from "@prisma/client/runtime";
@@ -9,6 +9,8 @@ import duration from "dayjs/plugin/duration";
 import relativeTime from "dayjs/plugin/relativeTime";
 
 import fs from "fs";
+
+const prisma = getPrismaClient();
 dotenv.config();
 day.extend(duration);
 day.extend(relativeTime);
@@ -20,7 +22,11 @@ const calculateBuyAmount = (price: Decimal, payed: Decimal) => {
 };
 
 const percent = (a: Decimal, b: Decimal) => a.minus(b).div(a).mul(100);
-const watch = async (symbol: PairEnumType, sellOnHighBand: boolean, minMacd:number) => {
+const watch = async (
+  symbol: PairEnumType,
+  sellOnHighBand: boolean,
+  minMacd: number
+) => {
   let startDate = day(process.env.START_DATE).add(2, "d");
 
   console.log(
@@ -115,7 +121,7 @@ const watch = async (symbol: PairEnumType, sellOnHighBand: boolean, minMacd:numb
     )
       .map((kline) => kline.close.toNumber())
       .reverse();
-   //  console.log({price, close})
+    //  console.log({price, close})
 
     counter += 1;
 
@@ -148,9 +154,12 @@ const watch = async (symbol: PairEnumType, sellOnHighBand: boolean, minMacd:numb
         trades.length,
         " sold ",
         sold,
-        " price: ", price.toNumber(),
-        " trades from today: ",  trades.filter((t) => t.when === when).length,
-        " - ",when
+        " price: ",
+        price.toNumber(),
+        " trades from today: ",
+        trades.filter((t) => t.when === when).length,
+        " - ",
+        when
       );
     }
 
@@ -161,13 +170,13 @@ const watch = async (symbol: PairEnumType, sellOnHighBand: boolean, minMacd:numb
     ) {
       const sellDiff = percent(targetBand, price);
 
-      if (sellDiff.lessThan(0.3) ) {
-    //    console.log(`[${symbol}][${startDate.format("YYYY-MM-DD HH:mm")}]`,'not buying - diff is ', sellDiff)
+      if (sellDiff.lessThan(0.3)) {
+        //    console.log(`[${symbol}][${startDate.format("YYYY-MM-DD HH:mm")}]`,'not buying - diff is ', sellDiff)
         wantToBuy = false;
         continue;
       }
-      if ( !macd[0] || macd[0] <=minMacd) {
-  //      console.log(`[${symbol}][${startDate.format("YYYY-MM-DD HH:mm")}]`,'not buying - macd is  ', macd[0])
+      if (!macd[0] || macd[0] <= minMacd) {
+        //      console.log(`[${symbol}][${startDate.format("YYYY-MM-DD HH:mm")}]`,'not buying - macd is  ', macd[0])
 
         wantToBuy = false;
         continue;
@@ -180,7 +189,8 @@ const watch = async (symbol: PairEnumType, sellOnHighBand: boolean, minMacd:numb
         sold
       );
       console.log(
-        `[${symbol}][${startDate.format("YYYY-MM-DD HH:mm")}]`, `BUY for ${price} - target low: ${sellDiff.toFixed(1)}% str: ${str
+        `[${symbol}][${startDate.format("YYYY-MM-DD HH:mm")}]`,
+        `BUY for ${price} - target low: ${sellDiff.toFixed(1)}% str: ${str
           .toNumber()
           .toFixed(2)}%  macd - ${macd[0]}`
       );
@@ -222,9 +232,9 @@ const watch = async (symbol: PairEnumType, sellOnHighBand: boolean, minMacd:numb
       }
     }
   }
-  if(sold===0) {
-    console.log('no trades was made ;(')
-    return false
+  if (sold === 0) {
+    console.log("no trades was made ;(");
+    return false;
   }
   const price = (
     await prisma.kline.findMany({
@@ -288,21 +298,19 @@ const watch = async (symbol: PairEnumType, sellOnHighBand: boolean, minMacd:numb
     }
     // file written successfully
   });
-  return {symbol,sold,
-    earn: earn,
-    loss,};
+  return { symbol, sold, earn: earn, loss };
   process.exit(0);
 };
 const runAll = async () => {
   //await watch("BTCUSDT", true);
- // await watch("ETHUSDT", true, 9);
- const result=[]
- for(const symbol in PairEnumType){
-  result.push(await watch(symbol as PairEnumType, true, 0))
- }
- //const result = await Promise.all(Object.values(PairEnumType).map(async symbol=> await watch(symbol as PairEnumType, true, 0)))
-console.log("================================")
-console.log(JSON.stringify(result,null,2))
+  // await watch("ETHUSDT", true, 9);
+  const result = [];
+  for (const symbol in PairEnumType) {
+    result.push(await watch(symbol as PairEnumType, true, 0));
+  }
+  //const result = await Promise.all(Object.values(PairEnumType).map(async symbol=> await watch(symbol as PairEnumType, true, 0)))
+  console.log("================================");
+  console.log(JSON.stringify(result, null, 2));
   process.exit(0);
 };
 

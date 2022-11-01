@@ -1,8 +1,8 @@
 import dayjs from "dayjs";
-import { prisma } from "../utils/prisma";
 import { match, P } from "ts-pattern";
 import { KlineSelectorType } from "../schema/kline.schema";
-
+import { getPrismaClient } from "@server/utils/prisma";
+const prisma = getPrismaClient();
 export const getKlines = async ({
   pair,
   period,

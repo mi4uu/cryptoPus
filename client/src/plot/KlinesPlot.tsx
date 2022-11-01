@@ -6,15 +6,18 @@ import {
   selectedPeriod,
 } from "@client/query/store";
 import { trpc } from "@client/query/trpc";
-import { LoadingOverlay } from "@mantine/core";
+import { Button, LoadingOverlay } from "@mantine/core";
 import { DateRangePickerValue } from "@mantine/dates";
-import { PairEnumType, PriceType } from "@server/enums";
-import { IconX } from "@tabler/icons";
+import { IconArrowsMove, IconRulerMeasure, IconX } from "@tabler/icons";
 import dayjs from "dayjs";
 import { SetStateAction, useAtom } from "jotai";
 import { useEffect, useState } from "react";
 import Plot from "react-plotly.js";
+//@ts-ignore
+import Plotly from "plotly.js/dist/plotly";
+
 import * as myPlotly from "plotly.js-dist-min";
+import { PairEnumType } from "@server/utils/prisma";
 
 export const KlinesPlot = () => {
   const [period] = useAtom(selectedPeriod);
@@ -64,6 +67,8 @@ const KlinesPlotInternal = ({
   setDateRange,
 }: KlinesPlotInternalProps) => {
   const [hoverPosition, setHover] = useAtom(hover);
+  const [dragmode, setDragmode] = useState<"pan" | "select">("pan");
+  const [percentDiff, setPercentDiff] = useState<number | null>(null);
 
   useEffect(() => {
     const containers = document.getElementsByClassName("js-plotly-plot");
@@ -71,7 +76,7 @@ const KlinesPlotInternal = ({
     for (const container of containers) {
       if (hoverPosition) {
         //@ts-ignore
-        myPlotly.Fx.hover(container, { xval: hoverPosition }, ["xy"]);
+        Plotly.Fx.hover(container, { xval: hoverPosition }, ["xy"]);
       }
     }
   }, [hoverPosition]);
@@ -105,29 +110,27 @@ const KlinesPlotInternal = ({
       yaxis: "y",
       name: "CANDLES",
     },
+  ];
+  const volumePlotData: Plotly.Data[] = [
     {
       x,
       y: volume,
       type: "bar",
-      xaxis: "x",
-      yaxis: "y2",
       name: "VOLUME",
     },
   ];
-
   const layout: Partial<Plotly.Layout> = {
     ...defaultLayout,
-    height: 600,
+    height: 400,
     title: "",
 
-    yaxis: { domain: [0, 0.8] },
-    yaxis2: { domain: [0.81, 1] },
     xaxis: {
       showspikes: true,
       spikemode: "across",
       autorange: true,
       rangeslider: { visible: false },
     },
+    dragmode,
   };
 
   return (
@@ -136,9 +139,43 @@ const KlinesPlotInternal = ({
       {/* <Plot
         data={{data:plotData, layout}}
       /> */}
-
+      <Button
+        onClick={() => {
+          setDragmode("pan");
+        }}
+      >
+        {" "}
+        <IconArrowsMove size={18} />{" "}
+      </Button>
+      <Button
+        onClick={() => {
+          setDragmode("select");
+        }}
+      >
+        <IconRulerMeasure size={18} />
+        &nbsp;&nbsp;{percentDiff ? `${percentDiff.toFixed(2)} %` : null}
+      </Button>
       <Plot
-        debug={true}
+        data={volumePlotData}
+        layout={{ ...layout, height: 100, dragmode: "pan" as "pan" }}
+        onRelayout={(event) => {
+          if ("xaxis.range[0]" in event && "xaxis.range[1]" in event) {
+            setDateRange([
+              dayjs(event["xaxis.range[0]"]).toDate(),
+              dayjs(event["xaxis.range[1]"]).toDate(),
+            ]);
+          }
+        }}
+        config={{
+          displayModeBar: false,
+        }}
+        onHover={(event) => {
+          if (event.xvals[0]) {
+            setHover(event.xvals[0] as number);
+          }
+        }}
+      />
+      <Plot
         data={plotData}
         layout={layout}
         onRelayout={(event) => {
@@ -156,6 +193,16 @@ const KlinesPlotInternal = ({
           if (event.xvals[0]) {
             setHover(event.xvals[0] as number);
           }
+        }}
+        onSelecting={(event) => {
+          const range = event.range?.y;
+          if (!range) return false;
+          const start = range[0] > range[1] ? range[1] : range[0];
+          const end = range[0] > range[1] ? range[0] : range[1];
+          const diff = end - start;
+          const percentage = (diff / end) * 100;
+          setPercentDiff(percentage);
+          console.log(percentage.toFixed(2));
         }}
       />
     </>

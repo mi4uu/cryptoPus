@@ -1,5 +1,3 @@
-import { PairEnumType, Period } from "@prisma/client";
-
 export enum PriceType {
   open = "open",
   close = "close",
@@ -10,5 +8,5 @@ export enum Indicators {
   macd = "Macd",
   rsi = "Rsi",
   adl = "Adl",
+  bb = "BB",
 }
-export { PairEnumType, Period };

@@ -2,7 +2,7 @@ import { trpc } from "@client/query/trpc";
 import { Grid, LoadingOverlay, Select } from "@mantine/core";
 import { useEffect, useState } from "react";
 import dayjs, { ManipulateType } from "dayjs";
-import { Indicators, PairEnumType, PriceType } from "@server/enums";
+import { Indicators, PriceType } from "shared/enums";
 import { useAtom } from "jotai";
 import {
   hover,
@@ -12,7 +12,9 @@ import {
 } from "../query/store";
 import Plot from "react-plotly.js";
 import { defaultLayout } from "../helpers/helpers";
-import { IndicatorsResultsValue } from "./Graph";
+import { IndicatorsResultsValue } from "./Plot";
+import { PairEnumType } from "@server/utils/prisma";
+import { IndicatorOptions } from "./IndicatorOptions";
 export interface IndicatorProps {
   setIndicatorResults: (key: string, value: IndicatorsResultsValue) => void;
   indicatorKey: string;
@@ -165,16 +167,8 @@ export const Indicator = (props: IndicatorProps) => {
             onChange={(value) => setPeriod(value)}
           />
         </Grid.Col>
-        <Grid.Col span={2}>
-          <Select
-            label="Select price"
-            placeholder="price"
-            data={Object.values(PriceType).map((pricetype) => ({
-              value: pricetype,
-              label: pricetype,
-            }))}
-            onChange={(value: PriceType) => setPriceType(value)}
-          />
+        <Grid.Col span={5}>
+          {indicator && <IndicatorOptions indicator={indicator} />}
         </Grid.Col>
       </Grid>
 

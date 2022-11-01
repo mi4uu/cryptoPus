@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { Indicators, PriceType } from "@server/enums";
+import { Indicators, PriceType } from "shared/enums";
 import { klineSelector } from "@server/schema/kline.schema";
 
 export const IndicatorSelector = klineSelector.extend({

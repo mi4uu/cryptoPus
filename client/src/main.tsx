@@ -14,7 +14,7 @@ export function AppWrapper() {
     trpc.createClient({
       links: [
         httpBatchLink({
-          url: "/api/",
+          url: "/api",
           //  optional
           headers() {
             return {

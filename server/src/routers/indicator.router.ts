@@ -4,8 +4,7 @@ import {
   IndicatorSelector,
   MacdSelector,
 } from "@server/schema/indicator.schema";
-import { Indicators, IndicatorType } from "@server/enums";
-import { z } from "zod";
+import { Indicators } from "@shared/enums";
 
 export const indicatorRouter = router({
   getMacd: t.procedure.input(MacdSelector).query(({ input, ctx }) => {

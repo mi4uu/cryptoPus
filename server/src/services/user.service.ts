@@ -1,6 +1,6 @@
-import { Prisma, User } from '@prisma/client';
-import { prisma } from '@server/utils/prisma';
-
+import { Prisma, User } from "@prisma/client";
+import { getPrismaClient } from "../utils/prisma";
+const prisma = getPrismaClient();
 export const createUser = async (input: Prisma.UserCreateInput) => {
   return (await prisma.user.create({
     data: input,
@@ -34,4 +34,3 @@ export const updateUser = async (
 ) => {
   return (await prisma.user.update({ where, data, select })) as User;
 };
-

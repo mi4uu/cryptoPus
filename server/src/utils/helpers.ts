@@ -1,5 +1,5 @@
+import { Period } from "@prisma/client";
 import { Decimal } from "@prisma/client/runtime";
-import { Period } from "@server/enums";
 import dayjs, { ManipulateType } from "dayjs";
 import duration from "dayjs/plugin/duration";
 import relativeTime from "dayjs/plugin/relativeTime";

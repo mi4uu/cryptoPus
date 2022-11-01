@@ -95,7 +95,8 @@
     "rootDir": ".",
     "paths": {
       "@client/*": ["client/src/*"],
-      "@server/*": ["server/src/*"]
+      "@server/*": ["server/src/*"],
+      "@shared/*": ["shared/*"]
     }
   },
   "ts-node": {

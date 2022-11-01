@@ -1,7 +1,7 @@
 import * as dotenv from "dotenv";
 import dayjs from "dayjs";
-import cliProgress from 'cli-progress'
-import { prisma } from "../utils/prisma";
+import cliProgress from "cli-progress";
+import { getPrismaClient } from "../utils/prisma";
 import { PairEnumType } from "@prisma/client";
 import { indicators } from "tulind";
 import { Decimal } from "@prisma/client/runtime";
@@ -10,7 +10,7 @@ import { saveChart } from "../commands/createSimulationGraph";
 import { humanizePeriod, logger, percent } from "../utils/helpers";
 import { toInteger } from "lodash";
 dotenv.config();
-
+const prisma = getPrismaClient();
 const buyForUsd = new Decimal(10);
 const calculateBuyAmount = (price: Decimal, payed: Decimal) => {
   const one = new Decimal(1);
@@ -19,22 +19,22 @@ const calculateBuyAmount = (price: Decimal, payed: Decimal) => {
 
 let lastProgress = 0;
 
-const watch = async (
- job:any, _done:(_:any,param:any)=>void
-) => {
-  const { symbol,
+const watch = async (job: any, _done: (_: any, param: any) => void) => {
+  const {
+    symbol,
     sellOnHighBand,
-    minMacd}: {
-      symbol: PairEnumType,
-      sellOnHighBand: boolean,
-      minMacd: number
-    } = job.data
+    minMacd,
+  }: {
+    symbol: PairEnumType;
+    sellOnHighBand: boolean;
+    minMacd: number;
+  } = job.data;
   let startDate = dayjs(process.env.START_DATE).add(2, "d");
 
   job.log(
     `----------------------------------- start for ${symbol} -----------------------------------`
   );
-  console.log(`start for ${symbol}`)
+  console.log(`start for ${symbol}`);
 
   const diff: Decimal[] = [];
   interface trade {
@@ -55,18 +55,21 @@ const watch = async (
   let wantToBuy = false;
   let sold = 0;
   let earn = new Decimal(0.0);
-  let progress = 0
-  let progressPercent = 0
-  let lastProgressPercent =0
+  let progress = 0;
+  let progressPercent = 0;
+  let lastProgressPercent = 0;
   let counter = 0;
   let lastHour = startDate.format("HH");
 
-  job.log("* collecting data")
-  const now = dayjs()
+  job.log("* collecting data");
+  const now = dayjs();
 
   // COLLECTING DATA
 
-  const bar0 = new cliProgress.SingleBar({}, cliProgress.Presets.shades_classic);
+  const bar0 = new cliProgress.SingleBar(
+    {},
+    cliProgress.Presets.shades_classic
+  );
 
   // COLLECTING DATA FOR PRICE STEP
 
@@ -82,30 +85,32 @@ const watch = async (
     },
   });
   const dataLength = data1m.length;
-  const progressTarget = dataLength*2
+  const progressTarget = dataLength * 2;
 
-  const updateProgress = ()=>{
-    progress+=1
-    progressPercent = toInteger(percent(progressTarget,progressTarget-progress).toNumber())
-    if(lastProgressPercent!==progressPercent){
-      lastProgressPercent=progressPercent
-      job.progress(progressPercent)
+  const updateProgress = () => {
+    progress += 1;
+    progressPercent = toInteger(
+      percent(progressTarget, progressTarget - progress).toNumber()
+    );
+    if (lastProgressPercent !== progressPercent) {
+      lastProgressPercent = progressPercent;
+      job.progress(progressPercent);
     }
-  }
+  };
   const _1hDataSeriesForHourSelectorFormat = "YYYYMMDDHH";
   const _1hDataSeriesForHour: {
     [selector: string]: number[];
   } = {};
 
-
-
   // COLLECTING DATA 1h DATA
   for (const { close: _, timestamp } of data1m) {
-    const selector = dayjs(timestamp).format(_1hDataSeriesForHourSelectorFormat)
+    const selector = dayjs(timestamp).format(
+      _1hDataSeriesForHourSelectorFormat
+    );
     counter += 1;
-    updateProgress()
+    updateProgress();
 
-    if(selector in _1hDataSeriesForHour) continue
+    if (selector in _1hDataSeriesForHour) continue;
 
     startDate = dayjs(timestamp).subtract(3, "d");
     const results = (
@@ -125,26 +130,18 @@ const watch = async (
       })
     ).map((v) => v.close.toNumber());
 
-    _1hDataSeriesForHour[selector] = results
-
+    _1hDataSeriesForHour[selector] = results;
   }
 
-
-
   job.log(`finish collecting data, it took ${humanizePeriod(now, dayjs())}`);
-
-
 
   // TRADING SIMULATION
   counter = 0;
 
   for (const { close: price, timestamp } of data1m) {
-
-
     // UPDATE PROGRESS
-    counter+=1
-    updateProgress()
-
+    counter += 1;
+    updateProgress();
 
     startDate = dayjs(timestamp);
     const currentHour = startDate.format("HH");
@@ -155,18 +152,17 @@ const watch = async (
     const bb = await indicators.bbands.indicator([close], [20, 1.1]);
 
     // SKIP IF NO BBANDS
-    if(bb[0].length<3 ) continue
+    if (bb[0].length < 3) continue;
     const bands = {
       lower: new Decimal(bb[0].splice(-1)[0]),
       middle: new Decimal(bb[1].splice(-1)[0]),
       high: new Decimal(bb[2].splice(-1)[0]),
     };
 
-
     const macd_ = await indicators.macd.indicator([close], [12, 26, 9]);
 
     // SKIP IF NO MACD
-    if(!macd_ || macd_.length<3 || macd_[2].length<3) continue
+    if (!macd_ || macd_.length < 3 || macd_[2].length < 3) continue;
 
     const macd2 = macd_[2][macd_[2].length - 1];
     const macd1 = macd_[2][macd_[2].length - 2];
@@ -190,27 +186,29 @@ const watch = async (
       wantToBuy = true;
     }
 
-
-
     if (wantToBuy) {
       if (sellDiff.lessThan(0.3)) {
         //    job.log(`[${symbol}][${startDate.format("YYYY-MM-DD HH:mm")}]`,'not buying - diff is ', sellDiff)
         wantToBuy = false;
         continue;
       }
-      job.log(JSON.stringify({
-        action:"BUY",
-        time: startDate.format("YYYY-MM-DD HH:mm"),
-        symbol,
-        target:sellDiff.toFixed(1),
-        "to sell":trades.length,
-        sold: sold,
-        "current price": price.toNumber(),
-        "trades from today":trades.filter((t) => t.when === when).length,
-        macd: [macd0, macd1, macd2]
-
-      },null,4))
-
+      job.log(
+        JSON.stringify(
+          {
+            action: "BUY",
+            time: startDate.format("YYYY-MM-DD HH:mm"),
+            symbol,
+            target: sellDiff.toFixed(1),
+            "to sell": trades.length,
+            sold: sold,
+            "current price": price.toNumber(),
+            "trades from today": trades.filter((t) => t.when === when).length,
+            macd: [macd0, macd1, macd2],
+          },
+          null,
+          4
+        )
+      );
 
       trades.push({
         price,
@@ -226,14 +224,13 @@ const watch = async (
     // trade
     for (const trade of trades) {
       if (trade.sellFor < price || (trade.price > price && macd2 < 0)) {
-
         const percDiff = percent(price, trade.price);
         diff.push(percDiff);
 
         sold += 1;
         earn = earn.plus(price.minus(trade.price).mul(trade.amount));
         const _trade = trades.filter((t) => t === trade)[0];
-        const timeToSell = humanizePeriod(_trade.timestamp, startDate)
+        const timeToSell = humanizePeriod(_trade.timestamp, startDate);
 
         if (percDiff.lessThanOrEqualTo(0))
           doneWithLoss.push({
@@ -251,28 +248,33 @@ const watch = async (
           });
         trades = trades.filter((t) => t !== trade);
 
-        job.log(JSON.stringify({
-          action:"SELL",
-          time: startDate.format("YYYY-MM-DD HH:mm"),
-          symbol,
-          earned:earn.toNumber(),
-          "trade diff":percDiff.toFixed(1),
-          target:sellDiff.toFixed(1),
-          timeToSell,
-          "to sell":trades.length,
-          sold: sold,
-          "current price": price.toNumber(),
-          "trades from today":trades.filter((t) => t.when === when).length,
-          macd: [macd0, macd1, macd2]
-
-        },null,4))
+        job.log(
+          JSON.stringify(
+            {
+              action: "SELL",
+              time: startDate.format("YYYY-MM-DD HH:mm"),
+              symbol,
+              earned: earn.toNumber(),
+              "trade diff": percDiff.toFixed(1),
+              target: sellDiff.toFixed(1),
+              timeToSell,
+              "to sell": trades.length,
+              sold: sold,
+              "current price": price.toNumber(),
+              "trades from today": trades.filter((t) => t.when === when).length,
+              macd: [macd0, macd1, macd2],
+            },
+            null,
+            4
+          )
+        );
       }
     }
   } // TRADING FINISHED
 
   if (sold === 0) {
     job.log("no trades was made ;(");
-    _done(null,{ symbol, err: "no trades was made ;(" })
+    _done(null, { symbol, err: "no trades was made ;(" });
     return { symbol, err: "no trades was made ;(" };
   }
   const price = (
@@ -351,7 +353,7 @@ const watch = async (
         macd: d.macd,
       }));
   await saveChart(symbol, "1h", mapToTrades(done), mapToTrades(doneWithLoss));
-  _done(null,{ symbol, sold, earn: earn, loss })
+  _done(null, { symbol, sold, earn: earn, loss });
   return { symbol, sold, earn: earn, loss };
 };
-export default watch
+export default watch;
